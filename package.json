@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/zgsrc/overactiv#readme",
   "dependencies": {
+    "hyperactiv": "git+https://github.com/zgsrc/hyperactiv.git",
     "ws": "^4.1.0"
   }
 }
