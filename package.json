@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/zgsrc/overactiv/issues"
   },
-  "homepage": "https://github.com/zgsrc/overactiv#readme"
+  "homepage": "https://github.com/zgsrc/overactiv#readme",
+  "dependencies": {
+    "ws": "^4.1.0"
+  }
 }
