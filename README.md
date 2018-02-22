@@ -6,12 +6,11 @@ Hyperactiv over WebSocket
 # Server
 
 ```javascript
+const WebSocket = require('ws');
 const overactiv = require('overactiv');
 
-const wss = overactive.createServer();
-overactive.extendServer(wss);
-
-const liveObject = overactive.host({ });
+const wss = overactive(new WebSocket.Server({ port: 8080 }));
+const liveObject = wss.host({ });
 ```
 
 # Client

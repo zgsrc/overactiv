@@ -1,15 +1,6 @@
-const WebSocket = require('ws');
 const { write } = require('hyperactive');
 
-function createServer(options) {
-    if (options == null) options = 8080;
-    if (Number.isInteger(options)) return new WebSocket.Server({ port: options });
-    else return new WebSocket.Server({ options });
-}
-
-exports.createServer = createServer;
-
-function extendServer(wss) {
+function host(wss) {
     wss.host = (obj, options) => {
         wss.on('connection', socket => {
             socket.on('sync', message => ({ type: 'sync', state: socket.send(obj) }));
@@ -28,9 +19,11 @@ function extendServer(wss) {
         Object.assign(opts, options || { });
         return observe(obj, opts);
     };
+    
+    return wss;
 }
 
-exports.extendServer = extendServer;
+exports.host = host;
 
 function open(url, obj) {
     const ws = new WebSocket(url || "ws://localhost:8080");
