@@ -3,17 +3,24 @@ Hyperactiv over WebSocket
 
     npm install https://github.com/zgsrc/overactiv
     
-# Server
+# Node.js Server
 
 ```javascript
 const WebSocket = require('ws');
-const overactiv = require('overactiv');
-
-const wss = overactive(new WebSocket.Server({ port: 8080 }));
+const overactiv = require('overactiv').server;
+const wss = overactiv(new WebSocket.Server({ port: 8080 }));
 const liveObject = wss.host({ });
 ```
 
-# Client
+# Node.js Client
+
+```javascript
+const WebSocket = require('ws');
+const overactiv = require('overactiv').client;
+const remoteObject = overactiv(new WebSocket("ws://localhost:8080"));
+```
+
+# Browser Client
 
 ```html
 <html>

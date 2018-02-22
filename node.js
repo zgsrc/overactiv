@@ -25,8 +25,7 @@ function host(wss) {
 
 exports.host = host;
 
-function open(url, obj) {
-    const ws = new WebSocket(url || "ws://localhost:8080");
+function open(ws, obj) {
     obj = obj || { };
 
     const update = write(obj);
@@ -35,6 +34,8 @@ function open(url, obj) {
         if (msg.type == 'sync') Object.assign(obj, msg.value);
         else if (msg.type == 'update') update(msg.path, msg.value);
     });
+    
+    return obj;
 }
 
 exports.open = open;

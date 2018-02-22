@@ -6,4 +6,6 @@ window.overactiv = (url, obj) => {
         if (msg.type == 'sync') Object.assign(obj, msg.value);
         else if (msg.type == 'update') update(msg.path, msg.value);
     });    
+    
+    return obj;
 };
