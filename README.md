@@ -1,5 +1,5 @@
 # Overactiv
-Hyperactiv over WebSocket
+[Hyperactiv](https://github.com/zgsrc/hyperactiv) over [WebSocket](https://github.com/websockets/ws)
 
     npm install https://github.com/zgsrc/overactiv
     
