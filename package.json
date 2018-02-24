@@ -1,6 +1,6 @@
 {
   "name": "overactiv",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "Hyperactiv over WebSocket",
   "main": "index.js",
   "scripts": {
@@ -12,10 +12,8 @@
   },
   "keywords": [
     "hyperactiv",
-    "reactive",
     "websocket",
-    "ws",
-    "socket.io"
+    "ws"
   ],
   "author": "Jonathan Hollinger",
   "license": "MIT",
@@ -24,7 +22,7 @@
   },
   "homepage": "https://github.com/zgsrc/overactiv#readme",
   "dependencies": {
-    "hyperactiv": "git+https://github.com/zgsrc/hyperactiv.git",
+    "hyperactiv": "^0.2.0",
     "ws": "^4.1.0"
   }
 }
