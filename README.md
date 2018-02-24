@@ -12,6 +12,24 @@ const wss = overactiv(new WebSocket.Server({ port: 8080 }));
 const liveObject = wss.host({ });
 ```
 
+# Node.js Express Server
+
+```javascript
+const http = require('http');
+const express = require('express');
+const WebSocket = require('ws');
+const overactiv = require('overactiv').server;
+
+const app = express();
+const server = http.createServer(app);
+const wss = overactiv(new WebSocket.Server({ server }));
+
+server.listen(8080);
+
+const remoteObject = wss.host({ });
+
+```
+
 # Node.js Client
 
 ```javascript
@@ -25,10 +43,11 @@ const remoteObject = overactiv(new WebSocket("ws://localhost:8080"));
 ```html
 <html>
     <head>
-        <script src="./node_modules/overactiv/browser.js"></script>
+        <script src="hyperactiv.js"></script>    
+        <script src="overactiv.js"></script>
     </head>
     <body onload="overactiv('ws://localhost:8080', window.remoteObject = { })">
-    
+        Check developer console for "remoteObject"
     </body>
 </html>
 ```
