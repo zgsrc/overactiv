@@ -3,7 +3,7 @@
 
     npm install https://github.com/zgsrc/overactiv
     
-# Node.js Server
+# Plain Websockets
 
 ```javascript
 const WebSocket = require('ws');
@@ -12,7 +12,7 @@ const wss = overactiv(new WebSocket.Server({ port: 8080 }));
 const liveObject = wss.host({ });
 ```
 
-# Node.js Express Server
+# Express Server
 
 ```javascript
 const http = require('http');
@@ -30,7 +30,7 @@ const remoteObject = wss.host({ });
 
 ```
 
-# Node.js Client
+# Websocket Client
 
 ```javascript
 const WebSocket = require('ws');
