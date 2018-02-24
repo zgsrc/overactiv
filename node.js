@@ -1,4 +1,4 @@
-const { observe, write } = require('hyperactive');
+const { computed, observe, dispose, handlers: { write } } = require('hyperactive');
 
 function host(wss) {
     wss.host = (obj, options) => {
@@ -28,12 +28,20 @@ function host(wss) {
 exports.host = host;
 
 function open(ws, obj) {
-    obj = obj || observe({ }, { deep: true, batch: true });
-    
-    const update = write(obj);
+    const update = handlers.write(obj);
     ws.on('message', msg => {
-        if (msg.type == 'sync') Object.assign(obj, msg.value);
-        else if (msg.type == 'update') update(msg.path, msg.value);
+        if (msg.type == 'sync') {
+            if (obj && typeof obj === 'function') {
+                obj = observe(obj(msg.value), { deep: true, batch: true });
+            }
+            else {
+                if (obj == null) obj = observe(msg.value, { deep: true, batch: true });
+                else Object.assign(obj, msg.value);
+            }
+        }
+        else if (msg.type == 'update') {
+            update(msg.path, msg.value);
+        }
     });
     
     ws.on('open', () => ws.send('sync'));
