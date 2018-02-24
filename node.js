@@ -1,9 +1,9 @@
-const { observe, handlers: { write, debug, all } } = require('hyperactive');
+const { observe, handlers: { write } } = require('hyperactiv');
 
 function stripMethods(obj, stack, list) {
     stack = stack || [ ];
     list = list || [ ];
-    obj.getOwnPropertyNames().forEach(prop => {
+    Object.getOwnPropertyNames(obj).forEach(prop => {
         stack.push(prop);
         if (typeof obj[prop] === 'function') list.push(stack.slice(0));
         else if (typeof obj[prop] === 'object') stripMethods(obj, stack, list);
@@ -13,31 +13,41 @@ function stripMethods(obj, stack, list) {
     return list;
 }
 
+function send(socket, obj) {
+    socket.send(JSON.stringify(obj));
+}
+
 exports.host = function host(wss) {
     wss.host = (obj, options) => {
         obj = obj || { };
         
         wss.on('connection', socket => {
-            socket.on('sync', message => {
-                socket.send({ type: 'sync', state: socket.send(obj), methods: stripMethods(obj) });
-            });
-            
-            socket.on('call', async message => {
-                let cxt = obj, result = null;
-                message.keys.forEach(key => cxt = cxt[key]);
-                try { result = await cxt(...message.args); }
-                catch (ex) { result = ex; }
-                socket.send({ type: 'response', result: result, request: message.request });
+            socket.on('message', async message => {
+                console.log(message);
+                
+                if (message == 'sync') {
+                    send(socket, { type: 'sync', state: obj, methods: stripMethods(obj) });
+                }
+                else if (message.type && message.type == 'call') {
+                    let cxt = obj, result = null;
+                    message.keys.forEach(key => cxt = cxt[key]);
+                    try { result = await cxt(...message.args); }
+                    catch (ex) { result = ex; }
+                    send(socket, { type: 'response', result: result, request: message.request });
+                }
             });
         });
         
         let opts = { 
-            deep: true, 
-            handler: function(path, value) {
-                let msg = { type: 'update', path: path, value: value };
+            bind: true,
+            deep: true,
+            batch: true,
+            handler: (keys, value) => {
                 wss.clients.forEach(client => {
-                    if (client.readyState === WebSocket.OPEN) client.send(msg);
-                });
+                    if (client.readyState === 1) {
+                        send(client, { type: 'update', keys: keys, value: value });
+                    }
+                })
             }
         };
         
@@ -52,6 +62,9 @@ const id = 1, cbs = { };
 exports.open = function open(ws, obj) {
     const update = handlers.write(obj);
     ws.on('message', msg => {
+        msg = JSON.parse(msg);
+        msg = msg.data;
+        
         if (msg.type == 'sync') {
             if (obj && typeof obj === 'function') {
                 obj = observe(obj(msg.value), { deep: true, batch: true });
@@ -61,17 +74,18 @@ exports.open = function open(ws, obj) {
                 else Object.assign(obj, msg.value);
             }
             
-            list.forEach(keys => update(keys, async () => {
+            msg.methods.forEach(keys => update(keys, async () => {
                 let promise = cbs[id] = new Promise();
-                ws.send('call', { keys: keys, args: arguments, request: id++ });
+                send(ws, { type: 'call', keys: keys, args: arguments, request: id++ });
                 return promise;
             }));
         }
         else if (msg.type == 'update') {
-            update(msg.path, msg.value);
+            update(msg.keys, msg.value);
         }
         else if (msg.type == 'response') {
             cbs[msg.request].resolve(msg.result);
+            delete cbs[msg.request];
         }
     });
     
