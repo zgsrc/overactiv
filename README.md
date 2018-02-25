@@ -3,7 +3,7 @@
 
     npm install https://github.com/zgsrc/overactiv
     
-# Plain Websockets
+# Plain WebSockets
 
 ```javascript
 const WebSocket = require('ws');
@@ -30,7 +30,7 @@ const remoteObject = wss.host({ });
 
 ```
 
-# Websocket Client
+# Node WebSocket Client
 
 ```javascript
 const WebSocket = require('ws');
@@ -38,7 +38,7 @@ const overactiv = require('overactiv').client;
 const remoteObject = overactiv(new WebSocket("ws://localhost:8080"));
 ```
 
-# Browser Client
+# Browser WebSocket Client
 
 ```html
 <html>

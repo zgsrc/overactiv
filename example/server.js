@@ -15,7 +15,24 @@ app.get("/browser.js", (req, res) => res.sendFile(path.resolve("./browser.js")))
 
 const server = http.createServer(app);
 const wss = overactiv(new WebSocket.Server({ server }));
-const remoteObject = wss.host({ });
+
+class MyClass {
+    
+    constructor() {
+        this.value = "This is an initial value";
+    }
+    
+    someMethod() {
+        this.value = "This has been set!";
+    }
+    
+    someOtherMethod() {
+        this.value = "This has been set by the other method!";
+    }
+    
+}
+
+const remoteObject = wss.host(new MyClass());
 
 const terminal = repl.start("> ");
 terminal.context.remoteObject = remoteObject;

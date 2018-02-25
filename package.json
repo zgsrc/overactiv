@@ -23,7 +23,7 @@
   "homepage": "https://github.com/zgsrc/overactiv#readme",
   "dependencies": {
     "express": "^4.16.2",
-    "hyperactiv": "^0.2.0",
+    "hyperactiv": "git+https://github.com/zgsrc/hyperactiv.git",
     "ws": "^4.1.0"
   }
 }

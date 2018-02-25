@@ -1,25 +1,36 @@
-window.overactiv = (url, obj, debug) => {
-    const id = 1, 
-          cbs = { },
+window.overactiv = (url, obj, debug, timeout) => {
+    const cbs = { },
           ws = new WebSocket(url || 'ws://localhost:8080'),
           update = hyperactiv.handlers.write(obj);
     
+    let id = 0;
     ws.addEventListener('message', msg => {
         msg = JSON.parse(msg.data);
         if (debug) console.debug(msg);
         if (msg.type == 'sync') {
-            if (typeof obj === 'function') obj = obj(msg.value);
-            else Object.assign(obj, msg.value);
-            msg.methods.forEach(keys => update(keys, async () => {
-                ws.send('call', { keys: keys, args: arguments, request: id });
-                return cbs[id++] = new Promise();
+            if (typeof obj === 'function') {
+                obj = obj(msg.state);
+            }
+            else {
+                Object.assign(obj, msg.state);
+            }
+            
+            msg.methods.forEach(keys => update(keys, async function() {
+                ws.send(JSON.stringify({ type: "call", keys: keys, args: Array.from(arguments), request: ++id }));
+                return new Promise((yes, no) => {
+                    cbs[id] = yes;
+                    setTimeout(() => {
+                        delete cbs[id];
+                        no(new Error("Timeout on call to " + keys));
+                    }, timeout || 15000);
+                });
             }));
         }
         else if (msg.type == 'update') {
             update(msg.keys, msg.value);
         }
         else if (msg.type == 'response') {
-            cbs[msg.request].resolve(msg.result);
+            cbs[msg.request](msg.result);
             delete cbs[msg.request];
         }
         else console.warn('Unrecognized message ' + (msg.type || msg));
