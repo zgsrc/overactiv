@@ -2,7 +2,7 @@ const observe = require('hyperactiv').observe,
       handlers = require('hyperactiv/handlers').handlers;
 
 function stripMethods(obj, stack, list) {
-    if (!obj || typeof obj !== 'object' && (!obj instanceof Date)) return;
+    if (!obj || typeof obj !== 'object' || obj instanceof Date || Array.isArray(obj)) return;
     
     stack = stack || [ ];
     list = list || [ ];
@@ -20,7 +20,7 @@ function stripMethods(obj, stack, list) {
     
     Object.keys(obj).forEach(prop => {
         stack.push(prop);
-        if (typeof obj[prop] == "object") stripMethods(obj[prop], stack, list);
+        if (typeof obj[prop] == 'object') stripMethods(obj[prop], stack, list);
         stack.pop();
     });
     
