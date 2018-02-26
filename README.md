@@ -55,8 +55,9 @@ remoteObject.value === "This has been set!";
 ```html
 <html>
     <head>
-        <script src="hyperactiv.js"></script>    
-        <script src="overactiv.js"></script>
+        <script src="https://unpkg.com/hyperactiv" ></script>
+        <script src="https://unpkg.com/hyperactiv/handlers/index.js" ></script>
+        <script src="https://unpkg.com/overactiv/browser.js"></script>
     </head>
     <body onload="overactiv('ws://localhost:8080', window.remoteObject = { })">
         Check developer console for "remoteObject"
