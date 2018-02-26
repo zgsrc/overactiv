@@ -18,19 +18,15 @@ const server = http.createServer(app);
 const wss = overactiv(new WebSocket.Server({ server }));
 
 class MyClass {
-    
     constructor() {
         this.value = "This is an initial value";
     }
-    
     someMethod() {
         this.value = "This has been set!";
     }
-    
     someOtherMethod() {
         this.value = "This has been set by the other method!";
     }
-    
 }
 
 const remoteObject = wss.host(new MyClass());
