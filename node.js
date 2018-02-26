@@ -12,14 +12,13 @@ function stripMethods(obj, stack, list) {
     
     props.forEach(prop => {
         stack.push(prop);
-        
-        if (typeof obj[prop] === 'function') {
-            list.push(stack.slice(0));
-        }
-        else if (typeof obj[prop] === 'object' && Object.getOwnPropertyDescriptor(obj, prop).enumerable) {
-            stripMethods(obj, stack, list);
-        }
-        
+        if (typeof obj[prop] === 'function') list.push(stack.slice(0));
+        stack.pop();
+    });
+    
+    Object.keys(obj).forEach(prop => {
+        stack.push(prop);
+        if (typeof obj[prop] == "object") stripMethods(obj[prop], stack, list);
         stack.pop();
     });
     
