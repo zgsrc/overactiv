@@ -5,13 +5,21 @@ function stripMethods(obj, stack, list) {
     stack = stack || [ ];
     list = list || [ ];
     
-    let props = Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(p => p != "constructor");
-    props.push(...Object.getOwnPropertyNames(obj));
+    let props = Object.getOwnPropertyNames(obj);
+    if (Object.getPrototypeOf(obj)) {
+        props.push(...Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(p => p != "constructor"));
+    }
     
     props.forEach(prop => {
         stack.push(prop);
-        if (typeof obj[prop] === 'function') list.push(stack.slice(0));
-        else if (typeof obj[prop] === 'object') stripMethods(obj, stack, list);
+        
+        if (typeof obj[prop] === 'function') {
+            list.push(stack.slice(0));
+        }
+        else if (typeof obj[prop] === 'object' && Object.getOwnPropertyDescriptor(obj, prop).enumerable) {
+            stripMethods(obj, stack, list);
+        }
+        
         stack.pop();
     });
     
