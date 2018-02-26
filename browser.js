@@ -15,16 +15,18 @@ window.overactiv = (url, obj, debug, timeout) => {
                 Object.assign(obj, msg.state);
             }
             
-            msg.methods.forEach(keys => update(keys, async function() {
-                ws.send(JSON.stringify({ type: "call", keys: keys, args: Array.from(arguments), request: ++id }));
-                return new Promise((yes, no) => {
-                    cbs[id] = yes;
-                    setTimeout(() => {
-                        delete cbs[id];
-                        no(new Error("Timeout on call to " + keys));
-                    }, timeout || 15000);
-                });
-            }));
+            if (Array.isArray(msg.methods)) {
+                msg.methods.forEach(keys => update(keys, async function() {
+                    ws.send(JSON.stringify({ type: "call", keys: keys, args: Array.from(arguments), request: ++id }));
+                    return new Promise((yes, no) => {
+                        cbs[id] = yes;
+                        setTimeout(() => {
+                            delete cbs[id];
+                            no(new Error("Timeout on call to " + keys));
+                        }, timeout || 15000);
+                    });
+                }));
+            }
         }
         else if (msg.type == 'update') {
             update(msg.keys, msg.value);
