@@ -11,6 +11,7 @@ const app = express();
 
 app.get("/", (req, res) => res.sendFile(path.resolve("./example/example.html")))
 app.get("/hyperactiv.js", (req, res) => res.sendFile(path.resolve("./node_modules/hyperactiv/dist/index.js")))
+app.get("/hyperactiv.handlers.js", (req, res) => res.sendFile(path.resolve("./node_modules/hyperactiv/handlers/index.js")))
 app.get("/browser.js", (req, res) => res.sendFile(path.resolve("./browser.js")))
 
 const server = http.createServer(app);

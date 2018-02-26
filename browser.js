@@ -1,7 +1,7 @@
 window.overactiv = (url, obj, debug, timeout) => {
     const cbs = { },
           ws = new WebSocket(url || 'ws://localhost:8080'),
-          update = hyperactiv.handlers.write(obj);
+          update = window["hyperactiv-handlers"].write(obj);
     
     let id = 0;
     ws.addEventListener('message', msg => {
