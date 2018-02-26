@@ -11,19 +11,15 @@ const overactiv = require('overactiv').server;
 const wss = overactiv(new WebSocket.Server({ port: 8080 }));
 
 class MyClass {
-    
     constructor() {
         this.value = "This is an initial value";
     }
-    
     someMethod() {
         this.value = "This has been set!";
     }
-    
     someOtherMethod() {
         this.value = "This has been set by the other method!";
     }
-    
 }
 
 const remoteObject = wss.host(new MyClass());
