@@ -1,37 +1,6 @@
 const observe = require('hyperactiv').observe,
       handlers = require('hyperactiv/handlers').handlers;
 
-function stripMethods(obj, stack, list) {
-    if (!obj || typeof obj !== 'object' || obj instanceof Date || Array.isArray(obj)) return;
-    
-    stack = stack || [ ];
-    list = list || [ ];
-    
-    let props = Object.getOwnPropertyNames(obj);
-    if (Object.getPrototypeOf(obj)) {
-        let name = Object.getPrototypeOf(obj).constructor.name;
-        if (["Array", "Object", "Date", "Boolean", "Number", "String"].indexOf(name) < 0) {
-            props.push(...Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(p => p != "constructor" && p != "toString"));
-        }
-        else props = [ ];
-    }
-    else props = [ ];
-    
-    props.forEach(prop => {
-        stack.push(prop);
-        if (typeof obj[prop] === 'function') list.push(stack.slice(0));
-        stack.pop();
-    });
-    
-    Object.keys(obj).forEach(prop => {
-        stack.push(prop);
-        if (typeof obj[prop] == 'object') stripMethods(obj[prop], stack, list);
-        stack.pop();
-    });
-    
-    return list;
-}
-
 function send(socket, obj) {
     socket.send(JSON.stringify(obj));
 }
@@ -45,7 +14,7 @@ exports.host = function host(wss) {
             
             socket.on('message', async message => {
                 if (message == 'sync') {
-                    send(socket, { type: 'sync', state: obj, methods: stripMethods(obj) });
+                    send(socket, { type: 'sync', state: obj });
                 }
                 else {
                     message = JSON.parse(message);
