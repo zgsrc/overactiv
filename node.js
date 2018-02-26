@@ -2,6 +2,8 @@ const observe = require('hyperactiv').observe,
       handlers = require('hyperactiv/handlers').handlers;
 
 function stripMethods(obj, stack, list) {
+    if (!obj) return;
+    
     stack = stack || [ ];
     list = list || [ ];
     
