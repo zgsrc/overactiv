@@ -9,7 +9,10 @@ function stripMethods(obj, stack, list) {
     
     let props = Object.getOwnPropertyNames(obj);
     if (Object.getPrototypeOf(obj)) {
-        props.push(...Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(p => p != "constructor"));
+        let name = Object.getPrototypeOf(obj).constructor.name;
+        if (["Array", "Object", "Date", "Boolean", "Number", "String"].indexOf(name) < 0) {
+            props.push(...Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).filter(p => p != "constructor" && p != "toString"));
+        }
     }
     
     props.forEach(prop => {
