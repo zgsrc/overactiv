@@ -9,7 +9,24 @@
 const WebSocket = require('ws');
 const overactiv = require('overactiv').server;
 const wss = overactiv(new WebSocket.Server({ port: 8080 }));
-const liveObject = wss.host({ });
+
+class MyClass {
+    
+    constructor() {
+        this.value = "This is an initial value";
+    }
+    
+    someMethod() {
+        this.value = "This has been set!";
+    }
+    
+    someOtherMethod() {
+        this.value = "This has been set by the other method!";
+    }
+    
+}
+
+const remoteObject = wss.host(new MyClass());
 ```
 
 # Express Server
@@ -19,15 +36,11 @@ const http = require('http');
 const express = require('express');
 const WebSocket = require('ws');
 const overactiv = require('overactiv').server;
-
 const app = express();
 const server = http.createServer(app);
 const wss = overactiv(new WebSocket.Server({ server }));
 
 server.listen(8080);
-
-const remoteObject = wss.host({ });
-
 ```
 
 # Node WebSocket Client
@@ -36,6 +49,9 @@ const remoteObject = wss.host({ });
 const WebSocket = require('ws');
 const overactiv = require('overactiv').client;
 const remoteObject = overactiv(new WebSocket("ws://localhost:8080"));
+
+remoteObject.someMethod();
+remoteObject.value === "This has been set!";
 ```
 
 # Browser WebSocket Client

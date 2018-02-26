@@ -1,6 +1,6 @@
 {
   "name": "overactiv",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Hyperactiv over WebSocket",
   "main": "index.js",
   "scripts": {
@@ -22,8 +22,10 @@
   },
   "homepage": "https://github.com/zgsrc/overactiv#readme",
   "dependencies": {
-    "express": "^4.16.2",
-    "hyperactiv": "git+https://github.com/zgsrc/hyperactiv.git",
+    "hyperactiv": "^0.2.2",
     "ws": "^4.1.0"
+  },
+  "devDependencies": {
+    "express": "^4.16.2"
   }
 }
