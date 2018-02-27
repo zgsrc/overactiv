@@ -1,20 +1,49 @@
-const observe = require('hyperactiv').observe,
+const {observe, container} = require('hyperactiv'),
       handlers = require('hyperactiv/handlers').handlers;
 
 function send(socket, obj) {
     socket.send(JSON.stringify(obj));
 }
 
+function findRemoteMethods(obj, stack, methods) {
+    if (!stack) stack = [ ];
+    if (!methods) methods = [ ];
+    if (typeof obj === 'object') {
+        if (obj.__remoteMethods) {
+            if (!Array.isArray(obj.__remoteMethods)) obj.__remoteMethods = [ obj.__remoteMethods ];
+            obj.__remoteMethods.forEach(method => {
+                stack.push(method);
+                methods.push(stack.slice(0));
+                stack.pop();
+            });
+        }
+        
+        Object.keys(obj).forEach(key => {
+            stack.push(key);
+            findRemoteMethods(obj[key], stack, methods);
+            stack.pop();
+        })
+    }
+    
+    return methods;
+}
+
 exports.host = function host(wss) {
-    wss.host = (obj, options) => {
-        obj = obj || { };
+    wss.host = () => {
+        const obj = container((keys, value, old) => {
+            wss.clients.forEach(client => {
+                if (client.readyState === 1) {
+                    send(client, { type: 'update', keys: keys, value: value, old: old });
+                }
+            })
+        })
         
         wss.on('connection', socket => {
             socket.on('error', err => null);
             
             socket.on('message', async message => {
                 if (message == 'sync') {
-                    send(socket, { type: 'sync', state: obj });
+                    send(socket, { type: 'sync', state: obj, methods: findRemoteMethods(obj) });
                 }
                 else {
                     message = JSON.parse(message);
@@ -29,21 +58,6 @@ exports.host = function host(wss) {
             });
         });
         
-        let opts = { 
-            bind: true,
-            deep: true,
-            batch: true,
-            handler: (keys, value) => {
-                wss.clients.forEach(client => {
-                    if (client.readyState === 1) {
-                        send(client, { type: 'update', keys: keys, value: value });
-                    }
-                })
-            }
-        };
-        
-        Object.assign(opts, options || { });
-        obj = observe(obj, opts);
         return obj;
     };
     
